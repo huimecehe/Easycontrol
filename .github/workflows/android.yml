@@ -1,7 +1,7 @@
 name: Easycontrol_For_Car
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:master
 
 jobs:
   build:
