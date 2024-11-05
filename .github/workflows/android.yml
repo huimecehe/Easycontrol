@@ -1,14 +1,12 @@
-name: Easycontrol_For_Car
+name: Easycontrol
 
 on:
-  workflow_dispatch:master
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the code
-      uses: actions/checkout@v4
     
     - name: Set up JDK 17
       uses: actions/setup-java@v4
