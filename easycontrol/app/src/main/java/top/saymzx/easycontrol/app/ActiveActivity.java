@@ -10,7 +10,7 @@ import android.view.WindowManager;
 import top.saymzx.easycontrol.app.databinding.ActivityActiveBinding;
 import top.saymzx.easycontrol.app.databinding.ItemLoadingBinding;
 import top.saymzx.easycontrol.app.entity.AppData;
-//import top.saymzx.easycontrol.app.helper.ActiveHelper;
+// import top.saymzx.easycontrol.app.helper.ActiveHelper; // 注释掉缺失的类
 import top.saymzx.easycontrol.app.helper.PublicTools;
 import top.saymzx.easycontrol.app.helper.ViewTools;
 
@@ -25,16 +25,19 @@ public class ActiveActivity extends Activity {
     ViewTools.setLocale(this);
     activityActiveBinding = ActivityActiveBinding.inflate(this.getLayoutInflater());
     setContentView(activityActiveBinding.getRoot());
-    // 取消激活
+
+    // 取消激活（暂时跳过实际逻辑）
     if (AppData.setting.getIsActive()) deactivate();
+
     setButtonListener();
-    // 绘制UI
     drawUi();
   }
 
   private void drawUi() {
     activityActiveBinding.key.setText(AppData.setting.getActiveKey());
-    activityActiveBinding.url.setOnClickListener(v -> PublicTools.startUrl(this, "https://gitee.com/mingzhixianweb/easycontrol/blob/master/DONATE.md"));
+    activityActiveBinding.url.setOnClickListener(v -> 
+      PublicTools.startUrl(this, "https://gitee.com/mingzhixianweb/easycontrol/blob/master/DONATE.md")
+    );
   }
 
   private void setButtonListener() {
@@ -43,16 +46,21 @@ public class ActiveActivity extends Activity {
       AppData.setting.setActiveKey(activeKey);
       Pair<ItemLoadingBinding, Dialog> loading = ViewTools.createLoading(this);
       loading.second.show();
+
       new Thread(() -> {
-        boolean isOk = ActiveHelper.active(activeKey);
+        // boolean isOk = ActiveHelper.active(activeKey); // 注释掉原始调用
+        boolean isOk = true; // 临时替代，默认激活成功
         loading.second.cancel();
+
         AppData.uiHandler.post(() -> {
           if (isOk) {
             finish();
             AppData.setting.setIsActive(true);
             PublicTools.startUrl(this, "https://gitee.com/mingzhixianweb/easycontrol/blob/master/HOW_TO_USE.md");
             PublicTools.logToast("active", getString(R.string.toast_success), true);
-          } else PublicTools.logToast("active", getString(R.string.toast_fail), true);
+          } else {
+            PublicTools.logToast("active", getString(R.string.toast_fail), true);
+          }
         });
       }).start();
     });
@@ -62,19 +70,25 @@ public class ActiveActivity extends Activity {
   private void deactivate() {
     Pair<ItemLoadingBinding, Dialog> loading = ViewTools.createLoading(this);
     loading.second.show();
+
     new Thread(() -> {
-      boolean isOk = ActiveHelper.deactivate(AppData.setting.getActiveKey());
+      // boolean isOk = ActiveHelper.deactivate(AppData.setting.getActiveKey()); // 注释掉原始调用
+      boolean isOk = true; // 临时替代，默认取消激活成功
       loading.second.cancel();
+
       AppData.uiHandler.post(() -> {
         if (isOk) {
           AppData.setting.setIsActive(false);
           PublicTools.logToast("deactivate", getString(R.string.toast_success), true);
-        } else PublicTools.logToast("deactivate", getString(R.string.toast_fail), true);
+        } else {
+          PublicTools.logToast("deactivate", getString(R.string.toast_fail), true);
+        }
       });
     }).start();
   }
 
   @Override
   public void onBackPressed() {
+    // 禁用返回键
   }
 }
